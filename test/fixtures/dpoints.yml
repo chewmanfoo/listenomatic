@@ -1,0 +1,81 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  timestamp: "2015-04-01T19:25:32.641416428Z"
+  app_name: MyString
+  pipeline_id: "pipeline1"
+  pipeline_instance_id: "unique1" 
+  sabre_phase: "phase1"
+  task: MyString
+  trended_metrics: MyString
+  tags: "begin,MyString,release:99.1.1"
+
+two:
+  timestamp: "2015-04-01T19:25:34.841416428Z"
+  app_name: MyString
+  pipeline_id: "pipeline1"
+  pipeline_instance_id: "unique1"
+  sabre_phase: "phase1"
+  task: MyString
+  trended_metrics: MyString
+  tags: "end,MyString,release:99.1.1"
+
+three:
+  timestamp: MyString
+  app_name: MyString
+  pipeline_id: MyString
+  pipeline_instance_id: MyString
+  sabre_phase: MyString
+  task: MyString
+  trended_metrics: MyString
+  tags: MyString
+
+four:
+  timestamp: "2015-04-01T19:25:34.841416428Z" 
+  app_name: MyString
+  pipeline_id: Pipeline1
+  pipeline_instance_id: unique1
+  sabre_phase: build
+  task: collect_code
+  trended_metrics: MyString
+  tags: MyString
+
+five:
+  timestamp: "2015-04-01T19:26:08.941416428Z"
+  app_name: MyString
+  pipeline_id: Pipeline1
+  pipeline_instance_id: unique1
+  sabre_phase: build
+  task: build_code
+  trended_metrics: MyString
+  tags: "begin"
+
+six:
+  timestamp: "2015-04-01T19:26:34.841416428Z"
+  app_name: MyString
+  pipeline_id: Pipeline1
+  pipeline_instance_id: unique1
+  sabre_phase: build
+  task: build_code
+  trended_metrics: MyString
+  tags: "end"
+
+seven:
+  timestamp: "2015-04-01T19:27:37.041416428Z"
+  app_name: MyString
+  pipeline_id: Pipeline1
+  pipeline_instance_id: unique1
+  sabre_phase: build
+  task: test
+  trended_metrics: MyString
+  tags: MyString
+
+ten:
+  timestamp: MyString
+  app_name:
+  pipeline_id: MyString
+  pipeline_instance_id: MyString
+  sabre_phase: MyString
+  task: MyString
+  trended_metrics: MyString
+  tags: MyString

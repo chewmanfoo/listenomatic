@@ -1,0 +1,13 @@
+<div class="show_edit_destroy_bar">
+  <ul class="inline-list">
+    <li><%= link_to obj do %>
+      <i class="fi-magnifying-glass"></i> S
+        <% end %>
+    </li>
+    <li><%= link_to edit_obj_path do %>
+      <i class="fi-wrench"></i> E
+        <% end %>
+    </li>
+    <li><%= link_to '<i class="fi-x"></i> D'.html_safe, obj, method: :delete, data: { confirm: 'Are you sure?' } %></li>
+  </ul>
+</div>

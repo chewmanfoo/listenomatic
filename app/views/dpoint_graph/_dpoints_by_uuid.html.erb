@@ -1,0 +1,25 @@
+<table>
+  <thead>
+    <tr>
+      <th>Sabre phase</th>
+      <th>Task</th>
+      <th>Trended metrics</th>
+      <th>Tags</th>
+      <th>Timestamp</th>
+      <th>Aggregates</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% dpoints.sort_by(&:timestamp).each do |d| %>
+      <tr>
+        <td><%= d.sabre_phase %></td>
+        <td><%= d.task %></td>
+        <td><%= trended_metrics_decorator(d.trended_metrics) %></td>
+        <td><%= tag_decorator(d.tags) %></td>
+        <td><%= d.timestamp %></td>
+        <td><%= d.elapsed %><em> seconds since #begin</em><br /><%= d.phase_elapsed %><em> seconds since beginning of sabre phase</em></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

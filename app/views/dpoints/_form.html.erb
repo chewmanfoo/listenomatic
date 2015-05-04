@@ -1,0 +1,49 @@
+<%= form_for(@dpoint) do |f| %>
+  <% if @dpoint.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@dpoint.errors.count, "error") %> prohibited this dpoint from being saved:</h2>
+
+      <ul>
+      <% @dpoint.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :timestamp %><br>
+    <%= f.text_field :timestamp %>
+  </div>
+  <div class="field">
+    <%= f.label :app_name %><br>
+    <%= f.text_field :app_name %>
+  </div>
+  <div class="field">
+    <%= f.label :pipeline_id %><br>
+    <%= f.text_field :pipeline_id %>
+  </div>
+  <div class="field">
+    <%= f.label :pipeline_instance_id %><br>
+    <%= f.text_field :pipeline_instance_id %>
+  </div>
+  <div class="field">
+    <%= f.label :sabre_phase %><br>
+    <%= f.text_field :sabre_phase %>
+  </div>
+  <div class="field">
+    <%= f.label :task %><br>
+    <%= f.text_field :task %>
+  </div>
+  <div class="field">
+    <%= f.label :trended_metrics %><br>
+    <%= f.text_field :trended_metrics %>
+  </div>
+  <div class="field">
+    <%= f.label :tags %><br>
+    <%= f.text_field :tags %>
+  </div>
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>

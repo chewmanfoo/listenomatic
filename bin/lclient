@@ -1,0 +1,38 @@
+#!/bin/bash
+
+[ "$#" -eq 1 ] || exit 1
+MESSAGE=$1
+POST_URL=http://104.131.176.82:3000/dpoints
+
+JSON='{"dpoint":{'$MESSAGE'}}'
+RESPONSE=$(curl -H 'Accept: application/json' \
+                -H 'Content-type: application/json' \
+                -X POST -s -d $JSON $POST_URL)
+
+echo "... sending curl -H 'Accept: application/json' -H 'Content-type: application/json' -X POST -s -d $JSON $POST_URL" 
+
+#read -p "press enter for response"
+
+echo $RESPONSE 
+
+REQUEST_ID=$(echo $RESPONSE | grep -Po '"id":\d*' | awk -F: '{ print $2 }')
+
+echo $REQUEST_ID
+
+#STATUS_URL=$DEPLOY_URL/$REQUEST_ID/show_deployment_reference.xml?auth_token=$AUTH_TOKEN
+#x=1
+#while [ $x -le 15 ]
+#do
+#  STATUS=$(curl -H 'Accept: application/xml' \
+#                -H 'Content-Type: application/xml' \
+#                -X GET -s $STATUS_URL)
+#  if echo $STATUS | grep --quiet complete_review; then
+#    break
+#  fi
+#  echo -n "."
+#  x=$(( $x + 1 ))
+#  sleep 60
+#done
+#if [ $x == 16 ]; then
+#  exit 2
+#fi

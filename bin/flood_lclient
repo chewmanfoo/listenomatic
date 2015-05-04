@@ -1,0 +1,239 @@
+function lcl() {
+  sa=$1
+  ts=$2
+  app=$3
+  pi=$4
+  uu=$5
+  tm=$6
+  tg=$7
+  dt=$(date --utc +%FT%T.%NZ)
+  message=$(printf "\"sabre_phase\":\"%s\",\"task\":\"%s\",\"app_name\":\"%s\",\"pipeline_id\":\"%s\",\"pipeline_instance_id\":\"%s\",\"timestamp\":\"%s\",\"trended_metrics\":\"%s\",\"tags\":\"%s\"" "$sa" "$ts" "$app" "$pi" "$uu" "$dt" "$tm" "$tg")
+  sleep $((RANDOM%10))
+  lclient $message 
+}
+
+function we_fail() {
+  at=$1
+
+  (( failures += 1 ))
+  echo "failed at $at!  breaking"
+}
+  
+#  lclient '"sabre_phase":"build", "task":"build", "app_name":"superman3", "pipeline_id":"compile", "pipeline_instance_id":"g9V5j2mTEWztvqsY", 
+#           "timestamp":"03-17-2015--15:14:10", "trended_metrics":"stuff", "tags":"tags-tags-tags"'
+
+  app_name=$1
+  rmajor=$2
+  rminor="1"
+  failures=0
+  while [ "$failures" -le "6" ]
+  do
+  for sp in conception check_in build unit_test package integration_test deploy_cert functional_test deploy_pilot pilot_test deploy_prod 
+  do
+    release="$rmajor.$rminor.$failures"
+    echo "sending messages for $sp... release $release"   
+
+    if [ "$failures" -lt "4" ]; then
+      rnumber=$((RANDOM%10))
+
+      case $rnumber in
+        0)
+          FAIL_UNIT_TEST=1
+          FAIL_INTEG_TEST=0
+          FAIL_FUNCT_TEST=0
+          FAIL_PILOT_TEST=0
+        ;;
+        1)
+          FAIL_UNIT_TEST=1
+          FAIL_INTEG_TEST=0
+          FAIL_FUNCT_TEST=0
+          FAIL_PILOT_TEST=0
+        ;;
+        2)
+          FAIL_UNIT_TEST=0
+          FAIL_INTEG_TEST=1
+          FAIL_FUNCT_TEST=0
+          FAIL_PILOT_TEST=0
+        ;;
+        3)
+          FAIL_UNIT_TEST=0
+          FAIL_INTEG_TEST=1
+          FAIL_FUNCT_TEST=0
+          FAIL_PILOT_TEST=0
+        ;;
+        4)
+          FAIL_UNIT_TEST=0
+          FAIL_INTEG_TEST=0
+          FAIL_FUNCT_TEST=1
+          FAIL_PILOT_TEST=0
+        ;;
+        5)
+          FAIL_UNIT_TEST=0
+          FAIL_INTEG_TEST=0
+          FAIL_FUNCT_TEST=1
+          FAIL_PILOT_TEST=0
+        ;;
+        6)
+          FAIL_UNIT_TEST=0
+          FAIL_INTEG_TEST=0
+          FAIL_FUNCT_TEST=0
+          FAIL_PILOT_TEST=1
+        ;;
+        7)
+          FAIL_UNIT_TEST=0
+          FAIL_INTEG_TEST=0
+          FAIL_FUNCT_TEST=0
+          FAIL_PILOT_TEST=1
+        ;;
+   [8-9] )
+          FAIL_UNIT_TEST=0
+          FAIL_INTEG_TEST=0
+          FAIL_FUNCT_TEST=0
+          FAIL_PILOT_TEST=0
+        ;;
+      esac
+    elif [ "$failures" -eq "5" ]; then
+      FAIL_UNIT_TEST=0
+      FAIL_INTEG_TEST=0
+      FAIL_FUNCT_TEST=0
+      FAIL_PILOT_TEST=0
+      FINAL_RUN=1
+    fi
+
+    case $sp in
+      conception)
+        uuid=$(uuidgen)
+        lcl $sp "final_check_in" $app_name "SabreBasePipeline" $uuid "total_commits:46,bugs_smashed:111" "conception,release:$release"
+        lcl $sp "final_approval" $app_name "SabreBasePipeline" $uuid "features_included:13,features_excluded:3" "conception_complete,release:$release"
+      ;;
+      check_in)
+        lcl $sp "code_complete" $app_name "SabreBasePipeline" $uuid "" "release:$release"
+      ;;
+      build)
+        lcl $sp "build_code_precheck" $app_name "SabreBasePipeline" $uuid "revision_count:7" "begin,release:$release"
+        lcl $sp "build_code_precheck" $app_name "SabreBasePipeline" $uuid "revision_set:r1234.r2345.r1345.r5476.r9820.r5643.r0987" "end,release:$release"
+        lcl $sp "build_env_precheck" $app_name "SabreBasePipeline" $uuid "" "begin,release:$release"
+        lcl $sp "build_env_precheck" $app_name "SabreBasePipeline" $uuid "" "end,release:$release"
+        lcl $sp "build_libs" $app_name "SabreBasePipeline" $uuid "" "begin,release:$release" & PIDBLB=$!
+        lcl $sp "build_libs" $app_name "SabreBasePipeline" $uuid "" "end,release:$release" & PIDBLE=$!
+        lcl $sp "build_code" $app_name "SabreBasePipeline" $uuid "" "begin,release:$release" & PIDBCB=$!
+        lcl $sp "build_code" $app_name "SabreBasePipeline" $uuid "" "end,release:$release" & PIDBCE=$!
+        wait $PIDBLB
+        wait $PIDBLE
+        wait $PIDBCB
+        wait $PIDBCE
+      ;;
+      unit_test)
+        if [ $FAIL_UNIT_TEST -eq 1 ]; then
+          lcl $sp "test_libs" $app_name "SabreBasePipeline" $uuid "total_tests:84,total_needed_to_pass:82" "begin,release:$release"
+          lcl $sp "test_libs" $app_name "SabreBasePipeline" $uuid "total_pass:2" "end,release:$release"
+          lcl $sp "test_libs" $app_name "SabreBasePipeline" $uuid "total_pass:2" "stop-failure,release:$release"
+          we_fail "unit test" && break
+        else           
+          lcl $sp "test_libs" $app_name "SabreBasePipeline" $uuid "total_tests:84,total_needed_to_pass:82" "begin,release:$release" & PIDTLB=$!
+          lcl $sp "test_libs" $app_name "SabreBasePipeline" $uuid "total_pass:84" "end,release:$release" & PIDTLE=$!
+          lcl $sp "test_code" $app_name "SabreBasePipeline" $uuid "total_tests:632,total_needed_to_pass:625" "begin,release:$release" & PIDTCB=$!
+          lcl $sp "test_code" $app_name "SabreBasePipeline" $uuid "total_pass:632" "end,release:$release" & PIDTCE=$!
+          wait $PIDTLB
+          wait $PIDTLE
+          wait $PIDTCB
+          wait $PIDTCE
+        fi
+      ;;
+      package)
+        test=$((RANDOM%3))
+        if [ $test -eq 1 ]; then
+          echo "skipping packaging messages!"
+        else
+          lcl $sp "create_package" $app_name "SabreBasePipeline" $uuid "" "begin,release:$release"
+          lcl $sp "create_package" $app_name "SabreBasePipeline" $uuid "" "end,release:$release"
+        fi
+      ;;
+      integration_test)
+        if [ $FAIL_INTEG_TEST -eq 1 ]; then
+          lcl $sp "test_package" $app_name "SabreBasePipeline" $uuid "total_tests:30,total_needed_to_pass:30" "begin,release:$release"
+          lcl $sp "test_package" $app_name "SabreBasePipeline" $uuid "total_pass:1" "end,release:$release"
+          lcl $sp "test_package" $app_name "SabreBasePipeline" $uuid "total_pass:1" "stop-failure,release:$release"
+          we_fail "integration test" && break
+        else
+          lcl $sp "test_package" $app_name "SabreBasePipeline" $uuid "total_tests:30,total_needed_to_pass:30" "begin,release:$release"
+          lcl $sp "test_package" $app_name "SabreBasePipeline" $uuid "total_pass:30" "end,release:$release"
+        fi
+      ;;
+      deploy_cert)
+        lcl $sp "deploy_preflight" $app_name "SabreBasePipeline" $uuid "tasks:12" "begin,release:$release" & PIDDPB=$!
+        lcl $sp "deploy_preflight" $app_name "SabreBasePipeline" $uuid "completed_tasks:12" "end,release:$release" & PIDDPE=$!
+        lcl $sp "deploy_authorization" $app_name "SabreBasePipeline" $uuid "" "begin,release:$release" & PIDDAB=$!
+        lcl $sp "deploy_authorization" $app_name "SabreBasePipeline" $uuid "" "end,release:$release" & PIDDAE=$!
+        wait $PIDDPB
+        wait $PIDDPE
+        wait $PIDDAB
+        wait $PIDDAE
+        lcl $sp "deploy_all" $app_name "SabreBasePipeline" $uuid "total_targets:4" "begin,release:$release"
+        lcl $sp "deploy_all" $app_name "SabreBasePipeline" $uuid "health_checks:44,fail_health_checks:0" "end,release:$release"
+        lcl $sp "test_deploy_all" $app_name "SabreBasePipeline" $uuid "total_tests:44" "begin,release:$release"
+        lcl $sp "test_deploy_all" $app_name "SabreBasePipeline" $uuid "total_pass:44" "end,release:$release"
+      ;;
+      functional_test)
+        if [ $FAIL_FUNCT_TEST -eq 1 ]; then
+          lcl $sp "workflow_tests" $app_name "SabreBasePipeline" $uuid "total_tests:22" "begin,release:$release"
+          lcl $sp "workflow_tests" $app_name "SabreBasePipeline" $uuid "total_pass:22" "end,release:$release"
+          lcl $sp "ui_tests" $app_name "SabreBasePipeline" $uuid "total_tests:45" "begin,release:$release"
+          lcl $sp "ui_tests" $app_name "SabreBasePipeline" $uuid "total_pass:0" "end,release:$release"
+          lcl $sp "ui_tests" $app_name "SabreBasePipeline" $uuid "total_pass:0" "stop-failure,release:$release"
+          we_fail "functional test" && break
+        else
+          lcl $sp "workflow_tests" $app_name "SabreBasePipeline" $uuid "total_tests:22" "begin,release:$release"
+          lcl $sp "workflow_tests" $app_name "SabreBasePipeline" $uuid "total_pass:22" "end,release:$release"
+          lcl $sp "ui_tests" $app_name "SabreBasePipeline" $uuid "total_tests:45" "begin,release:$release"
+          lcl $sp "ui_tests" $app_name "SabreBasePipeline" $uuid "total_pass:44" "end,release:$release"
+        fi
+      ;;
+      deploy_pilot)
+        lcl $sp "deploy_preflight" $app_name "SabreBasePipeline" $uuid "tasks:12" "begin,release:$release" & PIDPRB=$!
+        lcl $sp "deploy_preflight" $app_name "SabreBasePipeline" $uuid "completed_tasks:12" "end,release:$release" & PIDPRE=$!
+        lcl $sp "deploy_authorization" $app_name "SabreBasePipeline" $uuid "" "begin,release:$release" & PIDAUB=$!
+        lcl $sp "deploy_authorization" $app_name "SabreBasePipeline" $uuid "" "end,release:$release" & PIDAUE=$!
+        wait $PIDPRB
+        wait $PIDPRE
+        wait $PIDAUB
+        wait $PIDAUE
+        lcl $sp "deploy_all" $app_name "SabreBasePipeline" $uuid "total_targets:40" "begin,release:$release"
+        lcl $sp "deploy_all" $app_name "SabreBasePipeline" $uuid "health_checks:440,fail_health_checks:0" "end,release:$release"
+        lcl $sp "test_deploy_all" $app_name "SabreBasePipeline" $uuid "total_tests:440" "begin,release:$release"
+        lcl $sp "test_deploy_all" $app_name "SabreBasePipeline" $uuid "total_pass:440" "end,release:$release"
+      ;;
+      pilot_test)
+        if [ $FAIL_PILOT_TEST -eq 1 ]; then
+          lcl $sp "pilot_functional_tests" $app_name "SabreBasePipeline" $uuid "total_tests:15" "begin,release:$release"
+          lcl $sp "pilot_functional_tests" $app_name "SabreBasePipeline" $uuid "total_pass:0" "end,release:$release"
+          lcl $sp "pilot_functional_tests" $app_name "SabreBasePipeline" $uuid "total_pass:0" "stop-failure,release:$release"
+          we_fail "pilot test" && break
+        else
+          lcl $sp "pilot_functional_tests" $app_name "SabreBasePipeline" $uuid "total_tests:15" "begin,release:$release"
+          lcl $sp "pilot_functional_tests" $app_name "SabreBasePipeline" $uuid "total_pass:15" "end,release:$release"
+        fi
+      ;;
+      deploy_prod)
+        lcl $sp "deploy_preflight" $app_name "SabreBasePipeline" $uuid "tasks:12" "begin,release:$release" & PIDREB=$!
+        lcl $sp "deploy_preflight" $app_name "SabreBasePipeline" $uuid "completed_tasks:12" "end,release:$release" & PIDREE=$!
+        lcl $sp "deploy_authorization" $app_name "SabreBasePipeline" $uuid "" "begin,release:$release" & PIDTHB=$!
+        lcl $sp "deploy_authorization" $app_name "SabreBasePipeline" $uuid "" "end,release:$release" & PIDTHE=$!
+        wait $PIDREB
+        wait $PIDREE
+        wait $PIDTHB
+        wait $PIDTHE
+        lcl $sp "deploy_all" $app_name "SabreBasePipeline" $uuid "total_targets:40" "begin,release:$release"
+        lcl $sp "deploy_all" $app_name "SabreBasePipeline" $uuid "health_checks:440,fail_health_checks:0" "end,release:$release"
+        lcl $sp "test_deploy_all" $app_name "SabreBasePipeline" $uuid "total_tests:440" "begin,release:$release"
+        lcl $sp "test_deploy_all" $app_name "SabreBasePipeline" $uuid "total_pass:440" "end,stop-success,release:$release"
+        if [ $FINAL_RUN -eq 1 ]; then
+          failures=99
+        else
+          failures=0
+          (( rminor += 1 ))
+        fi
+      ;;
+    esac 
+  done
+  done

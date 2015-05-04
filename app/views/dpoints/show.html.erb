@@ -1,0 +1,44 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Timestamp:</strong>
+  <%= @dpoint.timestamp %>
+</p>
+
+<p>
+  <strong>App name:</strong>
+  <%= @dpoint.app_name %>
+</p>
+
+<p>
+  <strong>Pipeline:</strong>
+  <%= @dpoint.pipeline_id %>
+</p>
+
+<p>
+  <strong>Pipeline instance:</strong>
+  <%= @dpoint.pipeline_instance_id %>
+</p>
+
+<p>
+  <strong>Sabre phase:</strong>
+  <%= @dpoint.sabre_phase %>
+</p>
+
+<p>
+  <strong>Task:</strong>
+  <%= @dpoint.task %>
+</p>
+
+<p>
+  <strong>Trended metrics:</strong>
+  <%= @dpoint.trended_metrics %>
+</p>
+
+<p>
+  <strong>Tags:</strong>
+  <%= @dpoint.tags %>
+</p>
+
+<%= link_to 'Edit', edit_dpoint_path(@dpoint) %> |
+<%= link_to 'Back', dpoints_path %>

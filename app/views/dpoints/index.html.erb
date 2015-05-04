@@ -1,0 +1,53 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Listing Dpoints</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Application</th>
+      <th>Event data</th>
+      <th>Task</th>
+      <th>Trended metrics</th>
+      <th>Tags</th>
+      <th>Timestamp</th>
+      <th></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% if @dpoints.size > 0 %>
+    <% @dpoints.group_by(&:app_name).each do |app_name, dpoints| %>
+      <% dpoints.group_by(&:uuid).each do |id, dps| %>
+        <% @rows = dps.size + 1 %>
+        <tr>
+          <td rowspan="<%= @rows %>" colspan="1" style="text-align:left;vertical-align:top;padding:0">
+          <div class="label round success"><b><%= app_name %> <%= dps.first.release %></b><br />
+          <%= dps.first.pipeline_id %><br />
+          <%= dps.first.pipeline_instance_id %><br /><br />
+          <%#= link_to "graph", dpoint_graph_index_path(:uuid => dps.first.uuid) %></div> 
+          </td>
+        </tr>
+        <% dps.each do |dp| %>
+          <tr>  
+            <td><b><%= dp.app_name %></b><br /><%= dp.sabre_phase %></td>
+            <td><%= dp.task %></td>
+            <td><%= trended_metrics_decorator(dp.trended_metrics) %></td>
+            <td><%= tag_decorator(dp.tags) %></td>
+            <td><%= dp.timestamp %></td>
+            <td><%= render "common/show_edit_destroy", :obj => dp, :edit_obj_path => edit_dpoint_path(dp) %> 
+          </tr>
+        <% end %>
+      <% end %>
+    <% end %>
+    <% else %>
+      <div>There are no dpoints</div>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= paginate @dpoints unless params[:firehose] == "true" %>
+
+<%= link_to 'New Dpoint', new_dpoint_path %>
