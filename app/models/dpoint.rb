@@ -18,25 +18,25 @@ class Dpoint < ActiveRecord::Base
   end
   
   def elapsed
-    ta=self.tags.split(',').grep /^end/
-    unless ta.empty?
-      begin_dp = Dpoint.by_uuid(self.uuid).by_sabre_phase(self.sabre_phase).by_task(self.task).by_tag("begin").first
-      if begin_dp.blank? 
-        nil
-      else
-        Time.parse(timestamp) - Time.parse(begin_dp.timestamp)
-      end      
-    end
+#    ta=self.tags.split(',').grep /^end/
+#    unless ta.empty?
+#      begin_dp = Dpoint.by_uuid(self.uuid).by_sabre_phase(self.sabre_phase).by_task(self.task).by_tag("begin").first
+#      if begin_dp.blank? 
+#        nil
+#      else
+#        Time.parse(timestamp) - Time.parse(begin_dp.timestamp)
+#      end      
+#    end
   end
 
   def phase_elapsed
-    begin_dp = Dpoint.by_uuid(self.uuid).by_sabre_phase(self.sabre_phase).sort_by(&:timestamp).first
-    Time.parse(timestamp) - Time.parse(begin_dp.timestamp)
+#    begin_dp = Dpoint.by_uuid(self.uuid).by_sabre_phase(self.sabre_phase).sort_by(&:timestamp).first
+#    Time.parse(timestamp) - Time.parse(begin_dp.timestamp)
   end
 
   def uuid_elapsed
-    begin_dp = Dpoint.by_uuid(self.uuid).sort_by(&:timestamp).first
-    Time.parse(timestamp) - Time.parse(begin_dp.timestamp)
+#    begin_dp = Dpoint.by_uuid(self.uuid).sort_by(&:timestamp).first
+#    Time.parse(timestamp) - Time.parse(begin_dp.timestamp)
   end
 
   def as_json(options={})

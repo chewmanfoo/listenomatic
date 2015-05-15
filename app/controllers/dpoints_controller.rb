@@ -10,6 +10,11 @@ class DpointsController < ApplicationController
     else
       @dpoints = Dpoint.page(params[:page])
     end
+    respond_to do |format|
+      format.html # index.html.erb
+      format.xml  { render xml: @dpoints}
+      format.json { render json: @dpoints}
+    end
   end
 
   # GET /dpoints/1
